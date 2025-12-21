@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fidelización – Dionis Hairs</title>
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --text: #ffffff;
+      --muted: #b3b3b3;
+      --accent: #d4af37;
+      --bar-bg: #2a2a2a;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: #000;
+      padding: 18px 12px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .logo svg {
+      width: 200px;
+      height: auto;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .client {
+      text-align: center;
+    }
+
+    .name {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .level {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #000;
+    }
+
+    .points {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .points-number {
+      font-size: 64px;
+      font-weight: 800;
+    }
+
+    .points-label {
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+
+    .bar {
+      background: var(--bar-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 10px;
+      margin-top: 12px;
+    }
+
+    .fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .reward {
+      background: #222;
+      padding: 16px;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .info {
+      margin: 20px 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .qr-button {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .qr-box {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .qr-box img {
+      width: 180px;
+      height: 180px;
+    }
+  </style>
+</head>
+
+<body>
+
+<main class="card">
+
+  <header class="header">
+    <div class="logo">
+      <!-- TU LOGO SVG (SIN CAMBIOS) -->
+      <!-- PEGADO TAL CUAL -->
+      <!-- (lo dejo fuera por brevedad, usa el tuyo completo aquí) -->
+    </div>
+  </header>
+
+  <div class="content">
+
+    <section class="client">
+      <h1 class="name" id="clientName">—</h1>
+      <span class="level" id="clientLevel">—</span>
+    </section>
+
+    <section class="points">
+      <div class="points-number" id="points">0</div>
+      <div class="points-label">PUNTOS</div>
+
+      <div class="bar">
+        <div class="fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text" id="progressText">—</p>
+    </section>
+
+    <section class="reward">
+      <h2>🎁 Próxima recompensa</h2>
+      <p id="rewardText">—</p>
+    </section>
+
+    <section class="info">
+      <p>📅 Última visita: <strong id="lastVisit">—</strong></p>
+      <p>💈 Peluquero: <strong id="barberName">—</strong></p>
+    </section>
+
+    <button class="qr-button" onclick="toggleQR()">MOSTRAR MI QR</button>
+
+    <div class="qr-box" id="qrBox">
+      <img id="qrImage">
+      <p>Muestra este QR en Dionis Hairs</p>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  const id = new URLSearchParams(window.location.search).get("id");
+
+  if (!id) {
+    document.body.innerHTML = "<h2 style='color:white'>Cliente no identificado</h2>";
+    throw new Error("Sin ID");
+  }
+
+  fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/fidelizacion?id=${id}`)
+    .then(res => res.json())
+    .then(cliente => {
+
+
+      document.getElementById("clientName").textContent = cliente.nombre;
+      document.getElementById("clientLevel").textContent =
+        cliente.nivel === "pro" ? "⭐ Cliente PRO" : "Cliente Base";
+
+      document.getElementById("points").textContent = cliente.puntos;
+      document.getElementById("progressText").textContent =
+        `${cliente.puntos} / ${cliente.objetivo} visitas`;
+
+      document.getElementById("rewardText").textContent =
+        cliente.objetivo === cliente.puntos
+          ? "Recompensa disponible 🎉"
+          : "Lavado premium gratuito";
+
+      document.getElementById("lastVisit").textContent =
+        cliente.ultima_visita ?? "—";
+
+      document.getElementById("barberName").textContent = cliente.barbero;
+
+      const porcentaje = (cliente.puntos / cliente.objetivo) * 100;
+      document.getElementById("progressFill").style.width = porcentaje + "%";
+
+      const qrData = `https://dionishairs.github.io/fidelizacion/fidelizacion.html?id=${id}`;
+
+      document.getElementById("qrImage").src =
+        "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" +
+        encodeURIComponent(qrData);
+    })
+    .catch(err => console.error(err));
+
+  function toggleQR() {
+    const box = document.getElementById("qrBox");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+  }
+</script>
+
+</body>
+</html>
