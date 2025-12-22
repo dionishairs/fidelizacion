@@ -247,17 +247,65 @@
     throw new Error("Sin ID");
   }
 
-  // 👉 Función para mostrar SOLO la fecha
+  // 👉 Mostrar SOLO fecha (DD/MM/YYYY)
   function formatearFecha(fecha) {
     if (!fecha) return "—";
-    // Convierte "2025-12-21T00:00:00.000Z" → "21/12/2025"
     const d = new Date(fecha);
     return d.toLocaleDateString("es-ES");
   }
 
+  // 👉 Toast / animación de estado
+  function mostrarToast(ok, mensaje) {
+    let toast = document.getElementById("toast");
+
+    // Crear toast si no existe
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "toast";
+      toast.style.position = "fixed";
+      toast.style.bottom = "30px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.padding = "14px 20px";
+      toast.style.borderRadius = "12px";
+      toast.style.fontWeight = "600";
+      toast.style.color = "#000";
+      toast.style.zIndex = "9999";
+      toast.style.opacity = "0";
+      toast.style.transition = "all .4s ease";
+      document.body.appendChild(toast);
+    }
+
+    toast.style.background = ok ? "#d4af37" : "#ffb703";
+    toast.textContent = ok ? `✅ ${mensaje}` : `⚠️ ${mensaje}`;
+
+    // Mostrar
+    setTimeout(() => {
+      toast.style.opacity = "1";
+      toast.style.bottom = "50px";
+    }, 50);
+
+    // Ocultar
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.bottom = "30px";
+    }, 3500);
+  }
+
   fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/fidelizacion?id=${id}`)
     .then(res => res.json())
-    .then(cliente => {
+    .then(data => {
+
+      // 🔔 Si el webhook devuelve estado (ok / mensaje)
+      if (typeof data.ok !== "undefined") {
+        mostrarToast(data.ok, data.mensaje);
+
+        // ❌ Si NO es OK, no cargamos la tarjeta
+        if (!data.ok) return;
+      }
+
+      // 👤 Datos del cliente
+      const cliente = data;
 
       document.getElementById("clientName").textContent = cliente.nombre;
       document.getElementById("clientLevel").textContent =
@@ -272,7 +320,6 @@
           ? "Recompensa disponible 🎉"
           : "Lavado premium gratuito";
 
-      // ✅ AQUÍ ESTÁ EL CAMBIO IMPORTANTE
       document.getElementById("lastVisit").textContent =
         formatearFecha(cliente.ultima_visita);
 
@@ -281,13 +328,17 @@
       const porcentaje = (cliente.puntos / cliente.objetivo) * 100;
       document.getElementById("progressFill").style.width = porcentaje + "%";
 
-      const qrData = `https://dionishairs.github.io/fidelizacion/fidelizacion.html?id=${id}`;
+      const qrData =
+        `https://dionishairs.github.io/fidelizacion/fidelizacion.html?id=${id}`;
 
       document.getElementById("qrImage").src =
         "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" +
         encodeURIComponent(qrData);
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+      console.error(err);
+      mostrarToast(false, "Error al cargar los datos");
+    });
 
   function toggleQR() {
     const box = document.getElementById("qrBox");
