@@ -206,10 +206,17 @@
     throw new Error("Sin ID");
   }
 
+  // 👉 Función para mostrar SOLO la fecha
+  function formatearFecha(fecha) {
+    if (!fecha) return "—";
+    // Convierte "2025-12-21T00:00:00.000Z" → "21/12/2025"
+    const d = new Date(fecha);
+    return d.toLocaleDateString("es-ES");
+  }
+
   fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/fidelizacion?id=${id}`)
     .then(res => res.json())
     .then(cliente => {
-
 
       document.getElementById("clientName").textContent = cliente.nombre;
       document.getElementById("clientLevel").textContent =
@@ -224,8 +231,9 @@
           ? "Recompensa disponible 🎉"
           : "Lavado premium gratuito";
 
+      // ✅ AQUÍ ESTÁ EL CAMBIO IMPORTANTE
       document.getElementById("lastVisit").textContent =
-        cliente.ultima_visita ?? "—";
+        formatearFecha(cliente.ultima_visita);
 
       document.getElementById("barberName").textContent = cliente.barbero;
 
