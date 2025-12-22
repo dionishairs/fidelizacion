@@ -74,7 +74,6 @@
   <div class="loader"></div>
   <p>Registrando visita…</p>
 </div>
-
 <script>
   const id = new URLSearchParams(window.location.search).get("id");
   const app = document.getElementById("app");
@@ -92,7 +91,7 @@
     .then(res => res.json())
     .then(r => {
 
-      if (r.ok === true) {
+      if (r.ok === true || r.ok === "true") {
         app.innerHTML = `
           <div class="icon ok">✅</div>
           <h1>Visita registrada</h1>
@@ -102,7 +101,7 @@
         app.innerHTML = `
           <div class="icon warn">⚠️</div>
           <h1>Visita ya registrada</h1>
-          <p>${r.mensaje ?? "Este cliente ya ha registrado hoy"}</p>
+          <p>${r.mensaje || "Este cliente ya ha registrado su visita hoy"}</p>
         `;
       }
 
@@ -116,6 +115,7 @@
       console.error(err);
     });
 </script>
+
 
 </body>
 </html>
