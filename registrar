@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrar visita – Dionis Hairs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      text-align: center;
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 360px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .ok { color: #2ecc71; }
+    .warn { color: #f1c40f; }
+    .error { color: #e74c3c; }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 0;
+      color: #b3b3b3;
+      font-size: 15px;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #333;
+      border-top-color: #d4af37;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box" id="app">
+  <div class="loader"></div>
+  <p>Registrando visita…</p>
+</div>
+
+<script>
+  const id = new URLSearchParams(window.location.search).get("id");
+  const app = document.getElementById("app");
+
+  if (!id) {
+    app.innerHTML = `
+      <div class="icon error">❌</div>
+      <h1>Cliente no identificado</h1>
+      <p>QR no válido</p>
+    `;
+    throw new Error("Sin ID");
+  }
+
+  fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/registrar-visita?id=${id}`)
+    .then(res => res.json())
+    .then(r => {
+
+      if (r.ok === true) {
+        app.innerHTML = `
+          <div class="icon ok">✅</div>
+          <h1>Visita registrada</h1>
+          <p>Puntos actualizados correctamente</p>
+        `;
+      } else {
+        app.innerHTML = `
+          <div class="icon warn">⚠️</div>
+          <h1>Visita ya registrada</h1>
+          <p>${r.mensaje ?? "Este cliente ya ha registrado hoy"}</p>
+        `;
+      }
+
+    })
+    .catch(err => {
+      app.innerHTML = `
+        <div class="icon error">❌</div>
+        <h1>Error</h1>
+        <p>No se pudo registrar la visita</p>
+      `;
+      console.error(err);
+    });
+</script>
+
+</body>
+</html>
