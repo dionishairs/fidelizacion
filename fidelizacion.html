@@ -327,9 +327,9 @@
 
       const porcentaje = (cliente.puntos / cliente.objetivo) * 100;
       document.getElementById("progressFill").style.width = porcentaje + "%";
-
-      const qrData =
-        `https://dionishairs.github.io/fidelizacion/fidelizacion.html?id=${id}`;
+      
+const qrData =
+  `https://dionis-n8n.2vscvg.easypanel.host/webhook/registrar-visita?id=${id}`;
 
       document.getElementById("qrImage").src =
         "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" +
