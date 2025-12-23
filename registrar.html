@@ -74,10 +74,15 @@
   <div class="loader"></div>
   <p>Registrando visita…</p>
 </div>
+
 <script>
   const id = new URLSearchParams(window.location.search).get("id");
   const app = document.getElementById("app");
 
+  // 🔐 token del dispositivo
+  const deviceToken = localStorage.getItem("dionis_device_token");
+
+  // ❌ Sin ID
   if (!id) {
     app.innerHTML = `
       <div class="icon error">❌</div>
@@ -87,11 +92,28 @@
     throw new Error("Sin ID");
   }
 
-  fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/registrar-visita?id=${id}`)
+  // ❌ Sin token
+  if (!deviceToken) {
+    app.innerHTML = `
+      <div class="icon error">🚫</div>
+      <h1>Dispositivo no autorizado</h1>
+      <p>Este móvil no puede registrar visitas</p>
+    `;
+    throw new Error("Sin token de dispositivo");
+  }
+
+  fetch(
+    `https://dionis-n8n.2vscvg.easypanel.host/webhook/registrar-visita?id=${id}`,
+    {
+      headers: {
+        "X-Device-Token": deviceToken
+      }
+    }
+  )
     .then(res => res.json())
     .then(r => {
 
-      if (r.ok === true || r.ok === "true") {
+      if (r.ok === true) {
         app.innerHTML = `
           <div class="icon ok">✅</div>
           <h1>Visita registrada</h1>
@@ -100,7 +122,7 @@
       } else {
         app.innerHTML = `
           <div class="icon warn">⚠️</div>
-          <h1>Visita ya registrada</h1>
+          <h1>Visita no registrada</h1>
           <p>${r.mensaje || "Este cliente ya ha registrado su visita hoy"}</p>
         `;
       }
@@ -115,7 +137,6 @@
       console.error(err);
     });
 </script>
-
 
 </body>
 </html>
