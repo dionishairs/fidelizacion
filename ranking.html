@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clasificación – Dionis Hairs</title>
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --text: #ffffff;
+      --muted: #b3b3b3;
+      --accent: #d4af37;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 20px;
+      animation: fadeIn .4s ease;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* ===== TOP 3 ===== */
+    .top3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .top-card {
+      background: #222;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .top-card.gold { border: 2px solid #d4af37; }
+    .top-card.silver { border: 2px solid #aaa; }
+    .top-card.bronze { border: 2px solid #cd7f32; }
+
+    .top-card .position {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .top-card .points {
+      color: var(--accent);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    /* ===== LISTA ===== */
+    .list {
+      margin-top: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #181818;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .row.me {
+      box-shadow: 0 0 12px rgba(212,175,55,.35);
+      background: #222;
+      font-weight: 700;
+    }
+
+    /* ===== MENSAJE ===== */
+    .motivation {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 15px;
+      background: #222;
+      padding: 12px;
+      border-radius: 12px;
+      animation: pop .5s ease;
+    }
+
+    /* ===== BOTÓN ===== */
+    .back-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ===== ANIMACIONES ===== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      from { transform: scale(.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="card">
+    <h1>🏆 Clasificación</h1>
+    <p class="subtitle">Ranking mensual – Dionis Hairs</p>
+
+    <div class="top3"></div>
+
+    <div class="list"></div>
+
+    <div class="motivation">Cargando…</div>
+
+    <button class="back-btn" onclick="volver()">⬅ Volver a mi tarjeta</button>
+  </main>
+
+<script>
+const id = new URLSearchParams(window.location.search).get("id");
+
+if (!id) {
+  document.body.innerHTML = "<h2 style='color:white'>Cliente no identificado</h2>";
+  throw new Error("Sin ID");
+}
+
+const API =
+  `https://dionis-n8n.2vscvg.easypanel.host/webhook/ranking?id=${id}`;
+
+fetch(API)
+  .then(res => res.json())
+  .then(data => pintarRanking(data))
+  .catch(() => {
+    document.querySelector(".motivation").textContent =
+      "❌ No se pudo cargar la clasificación";
+  });
+
+function pintarRanking(data) {
+  const top3 = document.querySelector(".top3");
+  const list = document.querySelector(".list");
+  const motivation = document.querySelector(".motivation");
+
+  top3.innerHTML = "";
+  list.innerHTML = "";
+
+  data.ranking.forEach((c, i) => {
+    // TOP 3
+    if (i < 3) {
+      const clase = i === 0 ? "gold" : i === 1 ? "silver" : "bronze";
+      const emoji = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+
+      top3.innerHTML += `
+        <div class="top-card ${clase}" style="animation: pop .5s ease ${i * .15}s both">
+          <div class="position">${emoji} ${i + 1}</div>
+          <div>${c.nombre}</div>
+          <div class="points">${c.puntos} pts</div>
+        </div>`;
+    }
+
+    const esYo = c.esYo === true || c.id === data.cliente_id;
+
+    list.innerHTML += `
+      <div class="row ${esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
+        <strong>${i + 1}. ${esYo ? "Tú" : c.nombre}</strong>
+        <span>${c.puntos} pts</span>
+      </div>`;
+  });
+
+  if (data.me_faltan <= 0) {
+    motivation.innerHTML = "🏆 Estás en el TOP. Mantén el puesto";
+  } else {
+    motivation.innerHTML =
+      `🔥 A solo <strong>${data.me_faltan}</strong> visita${data.me_faltan > 1 ? "s" : ""} del TOP 3`;
+  }
+}
+
+function volver() {
+  window.history.back();
+}
+</script>
+
+</body>
+</html>
