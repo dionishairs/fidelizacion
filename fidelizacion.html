@@ -234,12 +234,45 @@
       <img id="qrImage">
       <p>Muestra este QR en Dionis Hairs</p>
     </div>
+<button class="qr-button" style="margin-top:14px;background:#222;color:#d4af37"
+  onclick="irRanking()">
+  🏆 VER CLASIFICACIÓN
+</button>
 
   </div>
 
 </main>
 
 <script>
+  const id = new URLSearchParams(window.location.search).get("id");
+
+  function irRanking() {
+    if (!id) return;
+    window.location.href = `ranking.html?id=${id}`;
+  }
+
+  // 🔔 Toast motivacional al cargar
+  window.addEventListener("load", () => {
+    mostrarToast(
+      "🔥 Estás compitiendo por premios este mes",
+      "success"
+    );
+  });
+
+  function mostrarToast(mensaje, tipo = "success") {
+    const toast = document.getElementById("toast");
+    const icon = document.getElementById("toastIcon");
+    const text = document.getElementById("toastMessage");
+
+    toast.className = "toast show " + tipo;
+
+    icon.textContent = tipo === "error" ? "❌" : "🏆";
+    text.textContent = mensaje;
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3500);
+    
   const id = new URLSearchParams(window.location.search).get("id");
 
   if (!id) {
