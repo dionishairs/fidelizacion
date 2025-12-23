@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Activar dispositivo</title>
+</head>
+
+<body style="background:#0f0f0f;color:white;text-align:center;padding:40px">
+
+<h2>Autorizar dispositivo</h2>
+<button onclick="activar()">Autorizar este móvil</button>
+<p id="msg"></p>
+
+<script>
+function generarFingerprint() {
+  return navigator.userAgent + "|" +
+         screen.width + "x" + screen.height;
+}
+
+function activar() {
+  const fingerprint = generarFingerprint();
+
+  fetch("https://dionis-n8n.2vscvg.easypanel.host/webhook/activar-dispositivo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fingerprint })
+  })
+  .then(r => r.json())
+  .then(r => {
+    if (r.ok) {
+      localStorage.setItem("dionis_device_token", r.token);
+      document.getElementById("msg").innerText =
+        "✅ Dispositivo autorizado";
+    } else {
+      document.getElementById("msg").innerText =
+        "❌ Error";
+    }
+  });
+}
+</script>
+
+</body>
+</html>
