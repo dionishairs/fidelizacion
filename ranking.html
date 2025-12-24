@@ -172,13 +172,13 @@ const API =
 
 fetch(API)
   .then(res => res.json())
-  .then(data => pintarRanking(data))
+  .then(ranking => pintarRanking(ranking))
   .catch(() => {
     document.querySelector(".motivation").textContent =
       "❌ No se pudo cargar la clasificación";
   });
 
-function pintarRanking(data) {
+function pintarRanking(ranking) {
   const top3 = document.querySelector(".top3");
   const list = document.querySelector(".list");
   const motivation = document.querySelector(".motivation");
@@ -186,8 +186,9 @@ function pintarRanking(data) {
   top3.innerHTML = "";
   list.innerHTML = "";
 
-  data.ranking.forEach((c, i) => {
-    // TOP 3
+  ranking.forEach((c, i) => {
+
+    // 🥇 TOP 3
     if (i < 3) {
       const clase = i === 0 ? "gold" : i === 1 ? "silver" : "bronze";
       const emoji = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
@@ -200,20 +201,22 @@ function pintarRanking(data) {
         </div>`;
     }
 
-    const esYo = c.esYo === true || c.id === data.cliente_id;
-
+    // 👤 Lista completa
     list.innerHTML += `
-      <div class="row ${esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
-        <strong>${i + 1}. ${esYo ? "Tú" : c.nombre}</strong>
+      <div class="row ${c.esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
+        <strong>${i + 1}. ${c.esYo ? "Tú" : c.nombre}</strong>
         <span>${c.puntos} pts</span>
       </div>`;
   });
 
-  if (data.me_faltan <= 0) {
-    motivation.innerHTML = "🏆 Estás en el TOP. Mantén el puesto";
+  // 🔥 Mensaje motivacional
+  const miPosicion = ranking.findIndex(r => r.esYo) + 1;
+
+  if (miPosicion <= 3) {
+    motivation.innerHTML = "🏆 Estás en el TOP 3. ¡Defiende tu puesto!";
   } else {
     motivation.innerHTML =
-      `🔥 A solo <strong>${data.me_faltan}</strong> visita${data.me_faltan > 1 ? "s" : ""} del TOP 3`;
+      `🔥 Estás en el puesto <strong>#${miPosicion}</strong>. ¡Sigue subiendo!`;
   }
 }
 
@@ -221,6 +224,7 @@ function volver() {
   window.history.back();
 }
 </script>
+
 
 </body>
 </html>
