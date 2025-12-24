@@ -201,6 +201,7 @@ fetch(API)
 
     // 🔢 Ordenar por puntos (seguridad extra)
     ranking.sort((a, b) => b.puntos - a.puntos);
+rankingNormalizado.sort((a, b) => a.posicion - b.posicion);
 
     pintarRanking(ranking);
   })
