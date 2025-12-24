@@ -175,13 +175,15 @@ fetch(API)
   .then(data => {
     let ranking = [];
 
-    // 🔧 NORMALIZAR RESPUESTA
-    if (Array.isArray(data)) {
+    // ✅ FORMATO REAL DEL WEBHOOK: [ { ranking: [...] } ]
+    if (Array.isArray(data) && data[0]?.ranking) {
+      ranking = data[0].ranking;
+    } else if (Array.isArray(data)) {
       ranking = data;
-    } else if (Array.isArray(data.ranking)) {
+    } else if (Array.isArray(data?.ranking)) {
       ranking = data.ranking;
-    } else if (typeof data === "object") {
-      ranking = [data];
+    } else {
+      ranking = [];
     }
 
     if (ranking.length === 0) {
@@ -190,18 +192,17 @@ fetch(API)
       return;
     }
 
-    // 🔧 Normalizar tipos
+    // 🔧 Normalizar tipos (MUY IMPORTANTE)
     ranking = ranking.map(r => ({
       id: r.id,
       nombre: r.nombre,
-      puntos: Number(r.puntos),
+      puntos: Number(r.puntos) || 0,
       posicion: Number(r.posicion),
       esYo: r.esYo === true || r.esYo === "true"
     }));
 
-    // 🔢 Ordenar por puntos (seguridad extra)
-    ranking.sort((a, b) => b.puntos - a.puntos);
-rankingNormalizado.sort((a, b) => a.posicion - b.posicion);
+    // ✅ ORDEN CORRECTO: por posición (ya viene calculada del backend)
+    ranking.sort((a, b) => a.posicion - b.posicion);
 
     pintarRanking(ranking);
   })
@@ -228,26 +229,26 @@ function pintarRanking(ranking) {
 
       top3.innerHTML += `
         <div class="top-card ${clase}" style="animation: pop .5s ease ${i * .15}s both">
-          <div class="position">${emoji} ${i + 1}</div>
+          <div class="position">${emoji} ${c.posicion}</div>
           <div>${c.esYo ? "Tú" : c.nombre}</div>
           <div class="points">${c.puntos} pts</div>
         </div>`;
     }
 
-    // 👤 LISTA COMPLETA
+    // 👤 LISTA COMPLETA (INCLUYE PUNTOS 0)
     list.innerHTML += `
       <div class="row ${c.esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
-        <strong>${i + 1}. ${c.esYo ? "Tú" : c.nombre}</strong>
+        <strong>${c.posicion}. ${c.esYo ? "Tú" : c.nombre}</strong>
         <span>${c.puntos} pts</span>
       </div>`;
   });
 
   // 🔥 MENSAJE MOTIVACIONAL
-  const miPosicion = ranking.findIndex(r => r.esYo) + 1;
+  const miPosicion = ranking.find(r => r.esYo)?.posicion;
 
-  if (miPosicion > 0 && miPosicion <= 3) {
+  if (miPosicion && miPosicion <= 3) {
     motivation.innerHTML = "🏆 Estás en el TOP 3. ¡Defiende tu puesto!";
-  } else if (miPosicion > 3) {
+  } else if (miPosicion) {
     motivation.innerHTML =
       `🔥 Estás en el puesto <strong>#${miPosicion}</strong>. ¡Sigue subiendo!`;
   } else {
@@ -259,6 +260,7 @@ function volver() {
   window.history.back();
 }
 </script>
+
 
 </body>
 </html>
