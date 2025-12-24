@@ -173,11 +173,25 @@ const API =
 fetch(API)
   .then(res => res.json())
   .then(data => {
-    // 🔒 Aseguramos SIEMPRE un array
-    const ranking = Array.isArray(data) ? data : [data];
+    let ranking = [];
 
-    // 🔧 Normalizar tipos (muy importante)
-    const rankingNormalizado = ranking.map(r => ({
+    // 🔧 NORMALIZAR RESPUESTA
+    if (Array.isArray(data)) {
+      ranking = data;
+    } else if (Array.isArray(data.ranking)) {
+      ranking = data.ranking;
+    } else if (typeof data === "object") {
+      ranking = [data];
+    }
+
+    if (ranking.length === 0) {
+      document.querySelector(".motivation").textContent =
+        "⚠️ No hay datos de clasificación";
+      return;
+    }
+
+    // 🔧 Normalizar tipos
+    ranking = ranking.map(r => ({
       id: r.id,
       nombre: r.nombre,
       puntos: Number(r.puntos),
@@ -185,11 +199,15 @@ fetch(API)
       esYo: r.esYo === true || r.esYo === "true"
     }));
 
-    pintarRanking(rankingNormalizado);
+    // 🔢 Ordenar por puntos (seguridad extra)
+    ranking.sort((a, b) => b.puntos - a.puntos);
+
+    pintarRanking(ranking);
   })
-  .catch(() => {
+  .catch(err => {
+    console.error(err);
     document.querySelector(".motivation").textContent =
-      "❌ No se pudo cargar la clasificación";
+      "❌ Error cargando la clasificación";
   });
 
 function pintarRanking(ranking) {
@@ -215,7 +233,7 @@ function pintarRanking(ranking) {
         </div>`;
     }
 
-    // 👤 Lista completa
+    // 👤 LISTA COMPLETA
     list.innerHTML += `
       <div class="row ${c.esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
         <strong>${i + 1}. ${c.esYo ? "Tú" : c.nombre}</strong>
@@ -223,7 +241,7 @@ function pintarRanking(ranking) {
       </div>`;
   });
 
-  // 🔥 Mensaje motivacional
+  // 🔥 MENSAJE MOTIVACIONAL
   const miPosicion = ranking.findIndex(r => r.esYo) + 1;
 
   if (miPosicion > 0 && miPosicion <= 3) {
