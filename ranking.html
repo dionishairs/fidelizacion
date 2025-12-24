@@ -175,24 +175,22 @@ fetch(API)
   .then(data => {
     let ranking = [];
 
-    // ✅ FORMATO REAL DEL WEBHOOK: [ { ranking: [...] } ]
+    // ✅ FORMATO REAL DEL WEBHOOK
     if (Array.isArray(data) && data[0]?.ranking) {
       ranking = data[0].ranking;
     } else if (Array.isArray(data)) {
       ranking = data;
     } else if (Array.isArray(data?.ranking)) {
       ranking = data.ranking;
-    } else {
-      ranking = [];
     }
 
-    if (ranking.length === 0) {
+    if (!ranking || ranking.length === 0) {
       document.querySelector(".motivation").textContent =
         "⚠️ No hay datos de clasificación";
       return;
     }
 
-    // 🔧 Normalizar tipos (MUY IMPORTANTE)
+    // 🔧 Normalizar tipos
     ranking = ranking.map(r => ({
       id: r.id,
       nombre: r.nombre,
@@ -201,7 +199,7 @@ fetch(API)
       esYo: r.esYo === true || r.esYo === "true"
     }));
 
-    // ✅ ORDEN CORRECTO: por posición (ya viene calculada del backend)
+    // Orden seguro por posición
     ranking.sort((a, b) => a.posicion - b.posicion);
 
     pintarRanking(ranking);
@@ -235,7 +233,7 @@ function pintarRanking(ranking) {
         </div>`;
     }
 
-    // 👤 LISTA COMPLETA (INCLUYE PUNTOS 0)
+    // 👤 LISTA COMPLETA
     list.innerHTML += `
       <div class="row ${c.esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
         <strong>${c.posicion}. ${c.esYo ? "Tú" : c.nombre}</strong>
@@ -243,17 +241,51 @@ function pintarRanking(ranking) {
       </div>`;
   });
 
-  // 🔥 MENSAJE MOTIVACIONAL
-  const miPosicion = ranking.find(r => r.esYo)?.posicion;
-
-  if (miPosicion && miPosicion <= 3) {
-    motivation.innerHTML = "🏆 Estás en el TOP 3. ¡Defiende tu puesto!";
-  } else if (miPosicion) {
-    motivation.innerHTML =
-      `🔥 Estás en el puesto <strong>#${miPosicion}</strong>. ¡Sigue subiendo!`;
-  } else {
+  // =============================
+  // 🔥 PROGRESO PERSONAL
+  // =============================
+  const yo = ranking.find(r => r.esYo);
+  if (!yo) {
     motivation.innerHTML = "💈 Participa para entrar en la clasificación";
+    return;
   }
+
+  // 👉 Guardar posición anterior
+  const posAnterior = Number(localStorage.getItem("ranking_pos_anterior"));
+  localStorage.setItem("ranking_pos_anterior", yo.posicion);
+
+  // 🚀 Aviso si has adelantado a alguien
+  if (posAnterior && yo.posicion < posAnterior) {
+    const adelantados = ranking
+      .filter(r => r.posicion >= yo.posicion && r.posicion < posAnterior && !r.esYo)
+      .map(r => r.nombre);
+
+    if (adelantados.length) {
+      motivation.innerHTML =
+        `🚀 Has adelantado a <strong>${adelantados.join(", ")}</strong>. Ahora estás <strong>#${yo.posicion}</strong>`;
+      return;
+    }
+  }
+
+  // 🥇 TOP 1
+  if (yo.posicion === 1) {
+    motivation.innerHTML =
+      "🏆 Eres el cliente más fiel este mes. ¡Defiende el primer puesto!";
+    return;
+  }
+
+  // 🔥 Progreso hasta el siguiente
+  const rival = ranking.find(r => r.posicion === yo.posicion - 1);
+  if (rival) {
+    const faltan = rival.puntos - yo.puntos + 1;
+    motivation.innerHTML =
+      `🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""} para adelantar a <strong>${rival.nombre}</strong>`;
+    return;
+  }
+
+  // fallback
+  motivation.innerHTML =
+    `💪 Estás en el puesto <strong>#${yo.posicion}</strong>. Sigue sumando visitas`;
 }
 
 function volver() {
