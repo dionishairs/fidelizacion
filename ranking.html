@@ -26,6 +26,7 @@
       display: flex;
       justify-content: center;
       padding: 20px;
+      min-height: 100vh;
     }
 
     .card {
@@ -34,8 +35,8 @@
       background: var(--card);
       border-radius: 20px;
       padding: 20px;
+      padding-bottom: 90px; /* 🔥 espacio real para el botón */
       animation: fadeIn .4s ease;
-      position: relative;
     }
 
     h1 {
@@ -48,15 +49,6 @@
       color: var(--muted);
       font-size: 14px;
       margin-bottom: 20px;
-    }
-
-    /* ===== BLOQUES VISUALES (NO CAPTURAN TOQUES) ===== */
-    .top3,
-    .list,
-    .motivation {
-      pointer-events: none; /* 🔥 CLAVE */
-      position: relative;
-      z-index: 1;
     }
 
     /* ===== TOP 3 ===== */
@@ -73,6 +65,7 @@
       padding: 12px;
       text-align: center;
       font-weight: 600;
+      animation: pop .5s ease;
     }
 
     .top-card.gold { border: 2px solid #d4af37; }
@@ -103,6 +96,7 @@
       background: #181818;
       margin-bottom: 8px;
       font-size: 15px;
+      animation: fadeUp .4s ease;
     }
 
     .row.me {
@@ -122,15 +116,10 @@
       animation: pop .5s ease;
     }
 
-    /* ===== BOTÓN FIX DEFINITIVO MÓVIL ===== */
+    /* ===== BOTÓN (FIX DEFINITIVO MÓVIL) ===== */
     .back-btn {
-      position: fixed;                 /* 🔥 capa nueva */
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 40px);
-      max-width: 380px;
-
+      margin-top: 20px;
+      width: 100%;
       padding: 14px;
       border-radius: 14px;
       border: none;
@@ -139,11 +128,9 @@
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-
-      z-index: 9999;                   /* 🔥 por encima de TODO */
-      pointer-events: auto;            /* 🔥 recibe toques */
-      touch-action: manipulation;      /* 🔥 iOS fix */
-      box-shadow: 0 10px 30px rgba(0,0,0,.5);
+      position: relative;
+      z-index: 5;
+      touch-action: manipulation;
     }
 
     /* ===== ANIMACIONES ===== */
@@ -156,24 +143,28 @@
       from { transform: scale(.9); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
+
+    @keyframes fadeUp {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 
 <body>
 
-  <main class="card">
-    <h1>🏆 Clasificación</h1>
-    <p class="subtitle">Ranking mensual – Dionis Hairs</p>
+<main class="card">
+  <h1>🏆 Clasificación</h1>
+  <p class="subtitle">Ranking mensual – Dionis Hairs</p>
 
-    <div class="top3"></div>
-    <div class="list"></div>
-    <div class="motivation">Cargando…</div>
-  </main>
+  <div class="top3"></div>
+  <div class="list"></div>
+  <div class="motivation">Cargando…</div>
 
   <button class="back-btn" onclick="volver()">
     ⬅ Volver a mi tarjeta
   </button>
-
+</main>
 <script>
 const id = new URLSearchParams(window.location.search).get("id");
 
