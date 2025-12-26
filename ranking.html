@@ -160,6 +160,8 @@
   <div class="top3"></div>
   <div class="list"></div>
   <div class="motivation">Cargando…</div>
+<div class="points">${c.puntos} pts</div>
+${c.posicion <= 3 ? `<div class="reward">${premioPorPosicion(c.posicion)}</div>` : ""}
 
   <button class="back-btn" onclick="volver()">
     ⬅ Volver a mi tarjeta
