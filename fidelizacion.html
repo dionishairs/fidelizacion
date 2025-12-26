@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fidelización – Dionis Hairs</title>
-<link rel="manifest" href="/fidelizacion/manifest.json">
-<meta name="theme-color" content="#d4af37">
 
-<link rel="apple-touch-icon" href="/fidelizacion/appstore.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/fidelizacion/manifest.json">
+  <meta name="theme-color" content="#d4af37">
+
+  <link rel="apple-touch-icon" href="/fidelizacion/appstore.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <style>
     :root {
@@ -43,29 +44,22 @@
       overflow: hidden;
     }
 
-    /* ===== HEADER ===== */
     .header {
       background: #000;
       padding: 18px 12px;
       display: flex;
       justify-content: center;
-      position: relative;
-      z-index: 1;
     }
 
     .logo svg {
       width: 200px;
-      height: auto;
-      pointer-events: none; /* 🔥 CLAVE: el SVG NO bloquea toques */
+      pointer-events: none;
     }
 
     .content {
       padding: 20px;
-      position: relative;
-      z-index: 2;
     }
 
-    /* ===== CLIENTE ===== */
     .client {
       text-align: center;
     }
@@ -86,7 +80,6 @@
       color: #000;
     }
 
-    /* ===== PUNTOS ===== */
     .points {
       text-align: center;
       margin: 30px 0;
@@ -123,7 +116,34 @@
       margin-top: 6px;
     }
 
-    /* ===== RECOMPENSA ===== */
+    /* ===== NUEVA SECCIÓN: CÓMO GANAR PUNTOS ===== */
+    .info-points {
+      margin: 20px 0;
+      background: #222;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 14px;
+    }
+
+    .info-points h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .info-points ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .info-points li {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
     .reward {
       background: #222;
       padding: 16px;
@@ -131,14 +151,12 @@
       text-align: center;
     }
 
-    /* ===== INFO ===== */
     .info {
       margin: 20px 0;
       font-size: 14px;
       color: var(--muted);
     }
 
-    /* ===== BOTONES ===== */
     .qr-button {
       width: 100%;
       padding: 14px;
@@ -147,11 +165,7 @@
       border: none;
       font-weight: 700;
       cursor: pointer;
-
-      position: relative;
-      z-index: 10;                 /* 🔥 encima de todo */
-      pointer-events: auto;
-      touch-action: manipulation;  /* 🔥 iOS fix */
+      touch-action: manipulation;
     }
 
     .qr-button.main {
@@ -165,7 +179,6 @@
       color: var(--accent);
     }
 
-    /* ===== QR ===== */
     .qr-box {
       display: none;
       margin-top: 20px;
@@ -206,36 +219,38 @@
       <p class="progress-text" id="progressText">—</p>
     </section>
 
-  <section class="reward">
-  <h2>🏆 Recompensas del ranking</h2>
+    <!-- ✨ NUEVO BLOQUE -->
+    <section class="info-points">
+      <h3>✨ Cómo ganar puntos</h3>
+      <ul>
+        <li><span>✂️ Corte / visita</span><strong>+6 punto</strong></li>
+        <li><span>👥 Traer un amigo</span><strong>+15 puntos</strong></li>
+        <li><span>🏆 Top mensual</span><strong>Premios</strong></li>
+      </ul>
+    </section>
 
-  <ul style="list-style:none;padding:0;margin:12px 0 0;font-size:14px">
-    <li>🥇 <strong>Top 1</strong> · 50% de descuento</li>
-    <li>🥈 <strong>Top 2</strong> · Lavado premium</li>
-    <li>🥉 <strong>Top 3</strong> · Bebida gratis</li>
-  </ul>
-
-  <p id="myRewardText" style="margin-top:12px;color:#d4af37;font-weight:600">
-    —
-  </p>
-</section>
-
+    <section class="reward">
+      <h2>🏆 Recompensas del ranking</h2>
+      <ul style="list-style:none;padding:0;margin:12px 0 0;font-size:14px">
+        <li>🥇 <strong>Top 1</strong> · 50% de descuento</li>
+        <li>🥈 <strong>Top 2</strong> · Lavado premium</li>
+        <li>🥉 <strong>Top 3</strong> · Bebida gratis</li>
+      </ul>
+      <p id="myRewardText" style="margin-top:12px;color:#d4af37;font-weight:600">—</p>
+    </section>
 
     <section class="info">
       <p>📅 Última visita: <strong id="lastVisit">—</strong></p>
       <p>💈 Peluquero: <strong id="barberName">—</strong></p>
     </section>
 
-    <button class="qr-button main" onclick="toggleQR()">
-      MOSTRAR MI QR
-    </button>
+    <button class="qr-button main" onclick="toggleQR()">MOSTRAR MI QR</button>
 
     <div class="qr-box" id="qrBox">
       <img id="qrImage">
       <p>Muestra este QR en Dionis Hairs</p>
     </div>
 
-    <!-- 🔥 BOTÓN QUE ANTES FALLABA: AHORA 100% FUNCIONAL -->
     <button class="qr-button secondary" onclick="irRanking()">
       🏆 VER CLASIFICACIÓN
     </button>
