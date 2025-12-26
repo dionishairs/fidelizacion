@@ -281,6 +281,23 @@
     }, 3500);
   }
 
+  function pintarMiRecompensa(posicion) {
+    const el = document.getElementById("myRewardText");
+    if (!el) return;
+
+    if (posicion === 1) {
+      el.textContent = "🎉 Tu recompensa actual: 50% de descuento";
+    } else if (posicion === 2) {
+      el.textContent = "💈 Tu recompensa actual: Lavado premium";
+    } else if (posicion === 3) {
+      el.textContent = "🥤 Tu recompensa actual: Bebida o producto gratis";
+    } else if (posicion) {
+      el.textContent = `🔥 Estás en el puesto #${posicion}. Entra en el Top 3 para ganar premio`;
+    } else {
+      el.textContent = "💈 Participa para entrar en el ranking mensual";
+    }
+  }
+
   window.addEventListener("load", () => {
     mostrarToast("🔥 Estás compitiendo por premios este mes", "success");
   });
@@ -289,27 +306,28 @@
     .then(res => res.json())
     .then(cliente => {
 
+      // =====================
+      // DATOS BÁSICOS
+      // =====================
       document.getElementById("clientName").textContent = cliente.nombre;
       document.getElementById("clientLevel").textContent =
         cliente.nivel === "pro" ? "⭐ Cliente PRO" : "Cliente Base";
 
       document.getElementById("points").textContent = cliente.puntos;
-      document.getElementById("progressText").textContent =
-        `${cliente.puntos} / ${cliente.objetivo} visitas`;
-
-      document.getElementById("rewardText").textContent =
-        cliente.objetivo === cliente.puntos
-          ? "Recompensa disponible 🎉"
-          : "Lavado premium gratuito";
 
       document.getElementById("lastVisit").textContent =
         formatearFecha(cliente.ultima_visita);
 
       document.getElementById("barberName").textContent = cliente.barbero;
 
-      const porcentaje = (cliente.puntos / cliente.objetivo) * 100;
-      document.getElementById("progressFill").style.width = porcentaje + "%";
+      // =====================
+      // RECOMPENSA SEGÚN RANKING
+      // =====================
+      pintarMiRecompensa(cliente.posicion);
 
+      // =====================
+      // QR
+      // =====================
       const qrData =
         `https://dionishairs.github.io/fidelizacion/registrar.html?id=${id}`;
 
@@ -321,6 +339,7 @@
       mostrarToast("Error al cargar los datos", "error");
     });
 </script>
+
 
 
 </body>
