@@ -35,7 +35,7 @@
       background: var(--card);
       border-radius: 20px;
       padding: 20px;
-      padding-bottom: 90px; /* 🔥 espacio real para el botón */
+      padding-bottom: 90px;
       animation: fadeIn .4s ease;
     }
 
@@ -83,6 +83,13 @@
       margin-top: 4px;
     }
 
+    .reward {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
     /* ===== LISTA ===== */
     .list {
       margin-top: 10px;
@@ -116,7 +123,7 @@
       animation: pop .5s ease;
     }
 
-    /* ===== BOTÓN (FIX DEFINITIVO MÓVIL) ===== */
+    /* ===== BOTÓN ===== */
     .back-btn {
       margin-top: 20px;
       width: 100%;
@@ -128,8 +135,6 @@
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      position: relative;
-      z-index: 5;
       touch-action: manipulation;
     }
 
@@ -160,13 +165,10 @@
   <div class="top3"></div>
   <div class="list"></div>
   <div class="motivation">Cargando…</div>
-<div class="points">${c.puntos} pts</div>
-${c.posicion <= 3 ? `<div class="reward">${premioPorPosicion(c.posicion)}</div>` : ""}
 
-  <button class="back-btn" onclick="volver()">
-    ⬅ Volver a mi tarjeta
-  </button>
+  <button class="back-btn" onclick="volver()">⬅ Volver a mi tarjeta</button>
 </main>
+
 <script>
 const id = new URLSearchParams(window.location.search).get("id");
 
@@ -175,30 +177,25 @@ if (!id) {
   throw new Error("Sin ID");
 }
 
-const API =
-  `https://dionis-n8n.2vscvg.easypanel.host/webhook/ranking?id=${id}`;
+const API = `https://dionis-n8n.2vscvg.easypanel.host/webhook/ranking?id=${id}`;
 
 fetch(API)
   .then(res => res.json())
   .then(data => {
     let ranking = [];
 
-    // ✅ FORMATO REAL DEL WEBHOOK
     if (Array.isArray(data) && data[0]?.ranking) {
       ranking = data[0].ranking;
     } else if (Array.isArray(data)) {
       ranking = data;
-    } else if (Array.isArray(data?.ranking)) {
-      ranking = data.ranking;
     }
 
-    if (!ranking || ranking.length === 0) {
+    if (!ranking.length) {
       document.querySelector(".motivation").textContent =
         "⚠️ No hay datos de clasificación";
       return;
     }
 
-    // 🔧 Normalizar tipos
     ranking = ranking.map(r => ({
       id: r.id,
       nombre: r.nombre,
@@ -207,16 +204,21 @@ fetch(API)
       esYo: r.esYo === true || r.esYo === "true"
     }));
 
-    // Orden seguro por posición
     ranking.sort((a, b) => a.posicion - b.posicion);
 
     pintarRanking(ranking);
   })
-  .catch(err => {
-    console.error(err);
+  .catch(() => {
     document.querySelector(".motivation").textContent =
       "❌ Error cargando la clasificación";
   });
+
+function premioPorPosicion(pos) {
+  if (pos === 1) return "🎉 50% de descuento";
+  if (pos === 2) return "💈 Lavado premium";
+  if (pos === 3) return "🥤 Bebida gratis";
+  return "";
+}
 
 function pintarRanking(ranking) {
   const top3 = document.querySelector(".top3");
@@ -227,86 +229,50 @@ function pintarRanking(ranking) {
   list.innerHTML = "";
 
   ranking.forEach((c, i) => {
-
-    // 🥇 TOP 3
     if (i < 3) {
       const clase = i === 0 ? "gold" : i === 1 ? "silver" : "bronze";
       const emoji = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
 
       top3.innerHTML += `
-        <div class="top-card ${clase}" style="animation: pop .5s ease ${i * .15}s both">
+        <div class="top-card ${clase}">
           <div class="position">${emoji} ${c.posicion}</div>
           <div>${c.esYo ? "Tú" : c.nombre}</div>
           <div class="points">${c.puntos} pts</div>
+          <div class="reward">${premioPorPosicion(c.posicion)}</div>
         </div>`;
     }
-function premioPorPosicion(pos) {
-  if (pos === 1) return "🎉 50% de descuento";
-  if (pos === 2) return "💈 Lavado premium";
-  if (pos === 3) return "🥤 Bebida gratis";
-  return null;
-}
 
-    // 👤 LISTA COMPLETA
     list.innerHTML += `
-      <div class="row ${c.esYo ? "me" : ""}" style="animation: fadeUp .4s ease ${i * .05}s both">
+      <div class="row ${c.esYo ? "me" : ""}">
         <strong>${c.posicion}. ${c.esYo ? "Tú" : c.nombre}</strong>
         <span>${c.puntos} pts</span>
       </div>`;
   });
 
-  // =============================
-  // 🔥 PROGRESO PERSONAL
-  // =============================
   const yo = ranking.find(r => r.esYo);
+
   if (!yo) {
-    motivation.innerHTML = "💈 Participa para entrar en la clasificación";
+    motivation.textContent = "💈 Participa para entrar en la clasificación";
     return;
   }
 
-  // 👉 Guardar posición anterior
-  const posAnterior = Number(localStorage.getItem("ranking_pos_anterior"));
-  localStorage.setItem("ranking_pos_anterior", yo.posicion);
-
-  // 🚀 Aviso si has adelantado a alguien
-  if (posAnterior && yo.posicion < posAnterior) {
-    const adelantados = ranking
-      .filter(r => r.posicion >= yo.posicion && r.posicion < posAnterior && !r.esYo)
-      .map(r => r.nombre);
-
-    if (adelantados.length) {
-      motivation.innerHTML =
-        `🚀 Has adelantado a <strong>${adelantados.join(", ")}</strong>. Ahora estás <strong>#${yo.posicion}</strong>`;
-      return;
-    }
-  }
-
-  // 🥇 TOP 1
   if (yo.posicion === 1) {
-    motivation.innerHTML =
-      "🏆 Eres el cliente más fiel este mes. ¡Defiende el primer puesto!";
+    motivation.innerHTML = "🏆 Eres el cliente más fiel este mes. ¡Defiende el puesto!";
     return;
   }
 
-  // 🔥 Progreso hasta el siguiente
   const rival = ranking.find(r => r.posicion === yo.posicion - 1);
   if (rival) {
     const faltan = rival.puntos - yo.puntos + 1;
     motivation.innerHTML =
       `🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""} para adelantar a <strong>${rival.nombre}</strong>`;
-    return;
   }
-
-  // fallback
-  motivation.innerHTML =
-    `💪 Estás en el puesto <strong>#${yo.posicion}</strong>. Sigue sumando visitas`;
 }
 
 function volver() {
   window.history.back();
 }
 </script>
-
 
 </body>
 </html>
