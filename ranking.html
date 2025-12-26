@@ -238,6 +238,12 @@ function pintarRanking(ranking) {
           <div class="points">${c.puntos} pts</div>
         </div>`;
     }
+function premioPorPosicion(pos) {
+  if (pos === 1) return "🎉 50% de descuento";
+  if (pos === 2) return "💈 Lavado premium";
+  if (pos === 3) return "🥤 Bebida gratis";
+  return null;
+}
 
     // 👤 LISTA COMPLETA
     list.innerHTML += `
