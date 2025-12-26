@@ -1,0 +1,20 @@
+{
+  "name": "Dionis Hairs Fidelización",
+  "short_name": "Dionis Hairs",
+  "start_url": "/fidelizacion/index.html",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#d4af37",
+  "icons": [
+    {
+      "src": "/fidelizacion/appstore.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/fidelizacion/appstore.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
