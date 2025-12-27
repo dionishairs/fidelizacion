@@ -203,6 +203,47 @@
   </div>
   <button class="btn">Marcar como entregada</button>
 </div>
+<script>
+const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
+
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    // KPIs
+    document.querySelectorAll(".kpi")[0].textContent = data.kpis.clientes_hoy;
+    document.querySelectorAll(".kpi")[1].textContent = data.kpis.visitas_hoy;
+    document.querySelectorAll(".kpi")[2].textContent = data.kpis.top1_nombre;
+    document.querySelectorAll(".kpi")[3].textContent = data.kpis.premios_pendientes;
+
+    // Ranking
+    const rankingBox = document.querySelector(
+      "h3:contains('Ranking')"
+    )?.nextElementSibling;
+
+    const rankingContainer = document.querySelector(
+      ".card h3:nth-of-type(2)"
+    );
+
+    const rankingList = document.querySelectorAll(".card")[4].querySelector(".list");
+    rankingList.innerHTML = "";
+
+    data.ranking.forEach((c, i) => {
+      const medal =
+        i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
+
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `
+        <strong>${medal} ${c.nombre}</strong>
+        <span>${c.puntos} pts</span>
+      `;
+      rankingList.appendChild(row);
+    });
+  })
+  .catch(err => {
+    console.error("Error cargando dashboard", err);
+  });
+</script>
 
 </body>
 </html>
