@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – Dionis Hairs</title>
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --text: #ffffff;
+      --muted: #b3b3b3;
+      --accent: #d4af37;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .kpi {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .list {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #222;
+    }
+
+    .row:last-child {
+      border-bottom: none;
+    }
+
+    .badge {
+      background: var(--accent);
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📊 Dashboard</h1>
+  <p class="subtitle">Dionis Hairs · Fidelización</p>
+
+  <!-- KPIs -->
+  <div class="grid">
+    <div class="card">
+      <div class="label">Clientes hoy</div>
+      <div class="kpi">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Visitas hoy</div>
+      <div class="kpi">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Top 1 actual</div>
+      <div class="kpi">—</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Premios pendientes</div>
+      <div class="kpi">—</div>
+    </div>
+  </div>
+
+  <!-- Actividad -->
+  <div class="card" style="margin-top:20px">
+    <h3>🕒 Actividad reciente</h3>
+    <div class="list">
+      <div class="row">
+        <span>Mikel · Visita (QR)</span>
+        <span>+1</span>
+      </div>
+      <div class="row">
+        <span>Igor · Invitado</span>
+        <span>+3</span>
+      </div>
+      <div class="row">
+        <span>David · Visita</span>
+        <span>+1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ranking -->
+  <div class="card" style="margin-top:20px">
+    <h3>🏆 Ranking actual</h3>
+    <div class="list">
+      <div class="row">
+        <strong>🥇 Mikel</strong>
+        <span>12 pts</span>
+      </div>
+      <div class="row">
+        <strong>🥈 Igor</strong>
+        <span>9 pts</span>
+      </div>
+      <div class="row">
+        <strong>🥉 David</strong>
+        <span>7 pts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recompensas -->
+  <div class="card" style="margin-top:20px">
+    <h3>🎁 Recompensas pendientes</h3>
+    <div class="row">
+      <span>Mikel · 50% descuento</span>
+      <span class="badge">Pendiente</span>
+    </div>
+    <button class="btn">Marcar como entregada</button>
+  </div>
+
+</body>
+</html>
