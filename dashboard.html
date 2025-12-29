@@ -182,31 +182,36 @@
 const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
 
 fetch(API_URL)
-  .then(res => {
-    if (!res.ok) throw new Error("Webhook no responde");
-    return res.json();
-  })
+  .then(res => res.json())
   .then(data => {
-    console.log("Dashboard data:", data);
+    // ✅ El webhook devuelve un array con 1 item
+    const payload = Array.isArray(data) ? data[0] : data;
 
-    // ===== KPIs =====
-    document.getElementById("kpi-clientes").textContent =
-      data.kpis.clientes_hoy;
+    if (!payload || !payload.kpis) {
+      throw new Error("Formato de dashboard inválido");
+    }
 
-    document.getElementById("kpi-visitas").textContent =
-      data.kpis.visitas_hoy;
+    /* =====================
+       KPIs
+    ====================== */
+    const kpis = payload.kpis;
 
-    document.getElementById("kpi-top1").textContent =
-      data.kpis.top1_nombre || "—";
+    const kpiEls = document.querySelectorAll(".kpi");
+    kpiEls[0].textContent = kpis.clientes_hoy;
+    kpiEls[1].textContent = kpis.visitas_hoy;
+    kpiEls[2].textContent = kpis.top1_nombre;
+    kpiEls[3].textContent = kpis.premios_pendientes;
 
-    document.getElementById("kpi-premios").textContent =
-      data.kpis.premios_pendientes;
+    /* =====================
+       RANKING
+    ====================== */
+    const rankingList = document.querySelector(
+      "h3:nth-of-type(2) + .list"
+    );
 
-    // ===== RANKING =====
-    const rankingList = document.getElementById("rankingList");
     rankingList.innerHTML = "";
 
-    data.ranking.forEach((c, i) => {
+    payload.ranking.forEach((c, i) => {
       const medal =
         i === 0 ? "🥇" :
         i === 1 ? "🥈" :
@@ -218,28 +223,12 @@ fetch(API_URL)
         <strong>${medal} ${c.nombre}</strong>
         <span>${c.puntos} pts</span>
       `;
+
       rankingList.appendChild(row);
     });
-
-    // ===== ACTIVIDAD (placeholder por ahora) =====
-    document.getElementById("actividadList").innerHTML = `
-      <div class="row">
-        <span>Última visita registrada</span>
-        <span>✔</span>
-      </div>
-    `;
-
-    // ===== RECOMPENSAS (placeholder) =====
-    document.getElementById("recompensasList").innerHTML = `
-      <div class="row">
-        <span>${data.kpis.top1_nombre} · Recompensa</span>
-        <span class="badge">Pendiente</span>
-      </div>
-    `;
   })
   .catch(err => {
-    console.error("❌ Error cargando dashboard:", err);
-    alert("Error cargando datos del dashboard");
+    console.error("❌ Error cargando dashboard", err);
   });
 </script>
 
