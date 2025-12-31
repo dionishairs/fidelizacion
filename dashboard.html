@@ -169,8 +169,11 @@
 <!-- ===== RECOMPENSAS ===== -->
 <div class="card" style="margin-top:20px">
   <h3>🎁 Recompensas pendientes</h3>
-  <div class="list" id="recompensasList"></div>
+  <div class="list" id="recompensasList">
+    <!-- Las recompensas se cargarán aquí -->
+  </div>
 </div>
+
 
 <script>
 const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
@@ -218,26 +221,58 @@ fetch(API_URL)
       rankingList.appendChild(row);
     });
 
-    /* =====================
-       RECOMPENSAS PENDIENTES
-    ====================== */
-    const recompensasList = document.querySelector("#recompensasList");
-    recompensasList.innerHTML = "";
+   /* =====================
+   RECOMPENSAS PENDIENTES
+====================== */
+const recompensasList = document.querySelector("#recompensasList");
+recompensasList.innerHTML = "";
 
-    payload.recompensas.forEach(r => {
-      const row = document.createElement("div");
-      row.className = "row";
-      row.innerHTML = `
-        <span>${r.cliente} · ${r.tipo}</span>
-        <span class="badge">${r.estado}</span>
-      `;
-      recompensasList.appendChild(row);
-    });
+payload.recompensas.forEach(r => {
+  const row = document.createElement("div");
+  row.className = "row";
+  
+  // Crear el HTML de cada fila de recompensa
+  row.innerHTML = `
+    <span>${r.cliente} · ${r.tipo}</span>
+    <span class="badge">${r.estado}</span>
+    <button class="btn canjear-btn" data-id="${r.id}">Marcar como entregada</button>
+  `;
 
-  })
-  .catch(err => {
-    console.error("❌ Error cargando dashboard", err);
+  // Añadir el evento de clic en el botón de canje
+  const btnCanjear = row.querySelector(".canjear-btn");
+  btnCanjear.addEventListener("click", () => {
+    // Llamada para actualizar el estado de la recompensa
+    marcarComoEntregada(r.id);
   });
+
+  recompensasList.appendChild(row);
+});
+
+/* =====================
+   Función para marcar como entregada
+====================== */
+function marcarComoEntregada(idRecompensa) {
+  // Actualiza el estado en la base de datos o sistema
+  fetch(`https://dionis-n8n.2vscvg.easypanel.host/webhook/canjear-recompensa`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ id: idRecompensa })
+  })
+    .then(res => res.json())
+    .then(response => {
+      // Si la actualización es exitosa, se cambia el estado de la recompensa
+      alert("¡Recompensa marcada como entregada!");
+      // Refrescar o actualizar el dashboard para reflejar el cambio
+      location.reload(); // Recarga el dashboard
+    })
+    .catch(err => {
+      console.error("Error al canjear recompensa:", err);
+      alert("Hubo un problema al marcar la recompensa.");
+    });
+}
+
 </script>
 
 </body>
