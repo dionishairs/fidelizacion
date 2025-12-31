@@ -118,53 +118,8 @@
 
 <body>
 
-<!-- ===== LOGO FONDO ===== -->
-<div class="brand-bg">
-  <!-- TU SVG COMPLETO AQUÍ (NO LO MODIFICO) -->
-</div>
-
 <h1>📊 Dashboard</h1>
 <p class="subtitle">Dionis Hairs · Fidelización</p>
-
-<!-- ===== KPIs ===== -->
-<div class="grid">
-  <div class="card">
-    <div class="label">Clientes hoy</div>
-    <div class="kpi" id="kpi-clientes">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Visitas hoy</div>
-    <div class="kpi" id="kpi-visitas">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Top 1 actual</div>
-    <div class="kpi" id="kpi-top1">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Premios pendientes</div>
-    <div class="kpi" id="kpi-premios">—</div>
-  </div>
-</div>
-
-<!-- ===== ACTIVIDAD RECIENTE (FUTURO) ===== -->
-<div class="card" style="margin-top:20px">
-  <h3>🕒 Actividad reciente</h3>
-  <div class="list" id="actividadList">
-    <div class="row">
-      <span>Cargando actividad…</span>
-      <span>—</span>
-    </div>
-  </div>
-</div>
-
-<!-- ===== RANKING ===== -->
-<div class="card" style="margin-top:20px">
-  <h3>🏆 Ranking actual</h3>
-  <div class="list" id="rankingList"></div>
-</div>
 
 <!-- ===== RECOMPENSAS ===== -->
 <div class="card" style="margin-top:20px">
@@ -173,7 +128,6 @@
     <!-- Las recompensas se cargarán aquí -->
   </div>
 </div>
-
 
 <script>
 const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
@@ -274,6 +228,7 @@ function marcarComoEntregada(idRecompensa) {
 }
 
 </script>
+
 
 </body>
 </html>
