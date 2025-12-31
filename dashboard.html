@@ -113,108 +113,115 @@
 </div>
 
 <script>
-  const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
+  document.addEventListener("DOMContentLoaded", function() {
+    const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
 
-  fetch(API_URL)
-    .then(res => res.json())
-    .then(data => {
-      // ✅ El webhook devuelve un array con 1 item
-      const payload = Array.isArray(data) ? data[0] : data;
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        // ✅ El webhook devuelve un array con 1 item
+        const payload = Array.isArray(data) ? data[0] : data;
 
-      if (!payload || !payload.kpis) {
-        throw new Error("Formato de dashboard inválido");
-      }
+        if (!payload || !payload.kpis) {
+          throw new Error("Formato de dashboard inválido");
+        }
 
-      /* =====================
-         KPIs
-      ====================== */
-      const kpis = payload.kpis;
-      const kpiEls = document.querySelectorAll(".kpi");
+        /* =====================
+           KPIs
+        ====================== */
+        const kpis = payload.kpis;
+        const kpiEls = document.querySelectorAll(".kpi");
 
-      if (kpiEls.length > 0) {
-        kpiEls[0].textContent = kpis.clientes_hoy;
-        kpiEls[1].textContent = kpis.visitas_hoy;
-        kpiEls[2].textContent = kpis.top1_nombre;
-        kpiEls[3].textContent = kpis.premios_pendientes;
-      }
+        if (kpiEls.length > 0) {
+          kpiEls[0].textContent = kpis.clientes_hoy;
+          kpiEls[1].textContent = kpis.visitas_hoy;
+          kpiEls[2].textContent = kpis.top1_nombre;
+          kpiEls[3].textContent = kpis.premios_pendientes;
+        }
 
-      /* =====================
-         RANKING
-      ====================== */
-      const rankingList = document.querySelector("#rankingList");
-      rankingList.innerHTML = "";
+        /* =====================
+           RANKING
+        ====================== */
+        const rankingList = document.querySelector("#rankingList");
+        rankingList.innerHTML = "";
 
-      payload.ranking.forEach((c, i) => {
-        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
-        const row = document.createElement("div");
-        row.className = "row";
-        row.innerHTML = `
-          <strong>${medal} ${c.nombre}</strong>
-          <span>${c.puntos} pts</span>
-        `;
-        rankingList.appendChild(row);
-      });
-
-      /* =====================
-         RECOMPENSAS PENDIENTES
-      ====================== */
-      const recompensasList = document.querySelector("#recompensasList");
-      recompensasList.innerHTML = "";
-
-      payload.recompensas.forEach(r => {
-        const row = document.createElement("div");
-        row.className = "row";
-        
-        // Crear el HTML de cada fila de recompensa
-        row.innerHTML = `
-          <span>${r.cliente} · ${r.tipo}</span>
-          <span class="badge">${r.estado}</span>
-          <button class="btn canjear-btn" data-id="${r.id}">Marcar como entregada</button>
-        `;
-
-        // Añadir el evento de clic en el botón de canje
-        const btnCanjear = row.querySelector(".canjear-btn");
-        btnCanjear.addEventListener("click", () => {
-          // Llamada para actualizar el estado de la recompensa
-          marcarComoEntregada(r.id);
+        payload.ranking.forEach((c, i) => {
+          const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+            <strong>${medal} ${c.nombre}</strong>
+            <span>${c.puntos} pts</span>
+          `;
+          rankingList.appendChild(row);
         });
 
-        recompensasList.appendChild(row);
-      });
+        /* =====================
+           RECOMPENSAS PENDIENTES
+        ====================== */
+        const recompensasList = document.querySelector("#recompensasList");
+        recompensasList.innerHTML = "";
 
-      /* =====================
-         Función para marcar como entregada
-      ====================== */
-      function marcarComoEntregada(idRecompensa) {
-        // Actualiza el estado en la base de datos o sistema
-        fetch("https://dionis-n8n.2vscvg.easypanel.host/webhook/canjear-recompensa", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ id: idRecompensa })
-        })
-        .then(res => res.json())
-        .then(response => {
-          // Si la actualización es exitosa, se cambia el estado de la recompensa
-          alert("¡Recompensa marcada como entregada!");
-          // Refrescar o actualizar el dashboard para reflejar el cambio
-          location.reload(); // Recarga el dashboard
-        })
-        .catch(err => {
-          console.error("Error al canjear recompensa:", err);
-          alert("Hubo un problema al marcar la recompensa.");
-        });
-      }
-    })
-    .catch(err => {
-      console.error("Error al cargar el dashboard:", err);
-      alert("Hubo un problema al cargar los datos del dashboard.");
-    });
+        if (payload.recompensas && payload.recompensas.length > 0) {
+          payload.recompensas.forEach(r => {
+            const row = document.createElement("div");
+            row.className = "row";
+            
+            // Crear el HTML de cada fila de recompensa
+            row.innerHTML = `
+              <span>${r.cliente} · ${r.tipo}</span>
+              <span class="badge">${r.estado}</span>
+              <button class="btn canjear-btn" data-id="${r.id}">Marcar como entregada</button>
+            `;
+
+            // Añadir el evento de clic en el botón de canje
+            const btnCanjear = row.querySelector(".canjear-btn");
+            btnCanjear.addEventListener("click", () => {
+              // Llamada para actualizar el estado de la recompensa
+              marcarComoEntregada(r.id);
+            });
+
+            recompensasList.appendChild(row);
+          });
+        } else {
+          recompensasList.innerHTML = "<p>No hay recompensas pendientes</p>";
+        }
+
+        /* =====================
+           Función para marcar como entregada
+        ====================== */
+        function marcarComoEntregada(idRecompensa) {
+          // Actualiza el estado en la base de datos o sistema
+          fetch("https://dionis-n8n.2vscvg.easypanel.host/webhook/canjear-recompensa", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id: idRecompensa })
+          })
+          .then(res => res.json())
+          .then(response => {
+            // Si la actualización es exitosa, se cambia el estado de la recompensa
+            alert("¡Recompensa marcada como entregada!");
+            // Refrescar o actualizar el dashboard para reflejar el cambio
+            location.reload(); // Recarga el dashboard
+          })
+          .catch(err => {
+            console.error("Error al canjear recompensa:", err);
+            alert("Hubo un problema al marcar la recompensa.");
+          });
+        }
+      })
+      .catch(err => {
+        console.error("Error al cargar el dashboard:", err);
+        alert("Hubo un problema al cargar los datos del dashboard.");
+      });
+  });
 </script>
 
 </body>
 </html>
+
 
 
 
