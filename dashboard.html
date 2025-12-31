@@ -104,6 +104,29 @@
 <h1>📊 Dashboard</h1>
 <p class="subtitle">Dionis Hairs · Fidelización</p>
 
+<!-- ===== KPIs ===== -->
+<div class="grid">
+  <div class="card">
+    <div class="label">Clientes hoy</div>
+    <div class="kpi" id="kpi-clientes">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Visitas hoy</div>
+    <div class="kpi" id="kpi-visitas">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Top 1 actual</div>
+    <div class="kpi" id="kpi-top1">—</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Premios pendientes</div>
+    <div class="kpi" id="kpi-premios">—</div>
+  </div>
+</div>
+
 <!-- ===== RECOMPENSAS ===== -->
 <div class="card" style="margin-top:20px">
   <h3>🎁 Recompensas pendientes</h3>
@@ -140,6 +163,7 @@
         const kpis = payload.kpis;
         const kpiEls = document.querySelectorAll(".kpi");
 
+        // Asegúrate de que haya 4 elementos con la clase `.kpi`
         if (kpiEls.length === 4) {
           kpiEls[0].textContent = kpis.clientes_hoy;
           kpiEls[1].textContent = kpis.visitas_hoy;
@@ -155,16 +179,20 @@
         const rankingList = document.querySelector("#rankingList");
         rankingList.innerHTML = "";
 
-        payload.ranking.forEach((c, i) => {
-          const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
-          const row = document.createElement("div");
-          row.className = "row";
-          row.innerHTML = `
-            <strong>${medal} ${c.nombre}</strong>
-            <span>${c.puntos} pts</span>
-          `;
-          rankingList.appendChild(row);
-        });
+        if (payload.ranking && payload.ranking.length > 0) {
+          payload.ranking.forEach((c, i) => {
+            const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "•";
+            const row = document.createElement("div");
+            row.className = "row";
+            row.innerHTML = `
+              <strong>${medal} ${c.nombre}</strong>
+              <span>${c.puntos} pts</span>
+            `;
+            rankingList.appendChild(row);
+          });
+        } else {
+          rankingList.innerHTML = "<p>No hay ranking disponible.</p>";
+        }
 
         /* =====================
            RECOMPENSAS PENDIENTES
@@ -231,6 +259,7 @@
 
 </body>
 </html>
+
 
 
 
