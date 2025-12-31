@@ -28,7 +28,6 @@
       z-index: 1;
     }
 
-    /* ===== FONDO MARCA ===== */
     .brand-bg {
       position: fixed;
       inset: 0;
@@ -102,6 +101,18 @@
       font-size: 12px;
       font-weight: 700;
     }
+
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -109,7 +120,7 @@
 
 <!-- ===== LOGO FONDO ===== -->
 <div class="brand-bg">
-  <!-- TU SVG AQUÍ -->
+  <!-- TU SVG COMPLETO AQUÍ (NO LO MODIFICO) -->
 </div>
 
 <h1>📊 Dashboard</h1>
@@ -138,12 +149,12 @@
   </div>
 </div>
 
-<!-- ===== ACTIVIDAD (FUTURO) ===== -->
+<!-- ===== ACTIVIDAD RECIENTE (FUTURO) ===== -->
 <div class="card" style="margin-top:20px">
   <h3>🕒 Actividad reciente</h3>
-  <div class="list">
+  <div class="list" id="actividadList">
     <div class="row">
-      <span>Próximamente</span>
+      <span>Cargando actividad…</span>
       <span>—</span>
     </div>
   </div>
@@ -158,12 +169,7 @@
 <!-- ===== RECOMPENSAS ===== -->
 <div class="card" style="margin-top:20px">
   <h3>🎁 Recompensas pendientes</h3>
-  <div class="list">
-    <div class="row">
-      <span>Total pendientes</span>
-      <span class="badge" id="recompensasBadge">—</span>
-    </div>
-  </div>
+  <div class="list" id="recompensasList"></div>
 </div>
 
 <script>
@@ -172,31 +178,28 @@ const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
 fetch(API_URL)
   .then(res => res.json())
   .then(data => {
-    // n8n devuelve array
+    // ✅ El webhook devuelve un array con 1 item
     const payload = Array.isArray(data) ? data[0] : data;
 
-    if (!payload || !payload.kpis || !payload.ranking) {
-      throw new Error("Formato de respuesta inválido");
+    if (!payload || !payload.kpis) {
+      throw new Error("Formato de dashboard inválido");
     }
 
-    /* ===== KPIs ===== */
-    document.getElementById("kpi-clientes").textContent =
-      payload.kpis.clientes_hoy;
+    /* =====================
+       KPIs
+    ====================== */
+    const kpis = payload.kpis;
 
-    document.getElementById("kpi-visitas").textContent =
-      payload.kpis.visitas_hoy;
+    const kpiEls = document.querySelectorAll(".kpi");
+    kpiEls[0].textContent = kpis.clientes_hoy;
+    kpiEls[1].textContent = kpis.visitas_hoy;
+    kpiEls[2].textContent = kpis.top1_nombre;
+    kpiEls[3].textContent = kpis.premios_pendientes;
 
-    document.getElementById("kpi-top1").textContent =
-      payload.kpis.top1_nombre;
-
-    document.getElementById("kpi-premios").textContent =
-      payload.kpis.premios_pendientes;
-
-    document.getElementById("recompensasBadge").textContent =
-      payload.kpis.premios_pendientes;
-
-    /* ===== RANKING ===== */
-    const rankingList = document.getElementById("rankingList");
+    /* =====================
+       RANKING
+    ====================== */
+    const rankingList = document.querySelector("#rankingList");
     rankingList.innerHTML = "";
 
     payload.ranking.forEach((c, i) => {
@@ -211,8 +214,26 @@ fetch(API_URL)
         <strong>${medal} ${c.nombre}</strong>
         <span>${c.puntos} pts</span>
       `;
+
       rankingList.appendChild(row);
     });
+
+    /* =====================
+       RECOMPENSAS PENDIENTES
+    ====================== */
+    const recompensasList = document.querySelector("#recompensasList");
+    recompensasList.innerHTML = "";
+
+    payload.recompensas.forEach(r => {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `
+        <span>${r.cliente} · ${r.tipo}</span>
+        <span class="badge">${r.estado}</span>
+      `;
+      recompensasList.appendChild(row);
+    });
+
   })
   .catch(err => {
     console.error("❌ Error cargando dashboard", err);
