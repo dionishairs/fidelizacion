@@ -28,6 +28,23 @@
       z-index: 1;
     }
 
+    .brand-bg {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .brand-bg svg {
+      width: 480px;
+      max-width: 85%;
+      filter: blur(1px);
+    }
+
     h1 {
       margin: 0 0 6px;
     }
@@ -109,6 +126,14 @@
   <h3>🎁 Recompensas pendientes</h3>
   <div class="list" id="recompensasList">
     <!-- Las recompensas se cargarán aquí -->
+  </div>
+</div>
+
+<!-- ===== RANKING ===== -->
+<div class="card" style="margin-top:20px">
+  <h3>🏆 Ranking actual</h3>
+  <div class="list" id="rankingList">
+    <!-- El ranking se cargará aquí -->
   </div>
 </div>
 
@@ -221,8 +246,6 @@
 
 </body>
 </html>
-
-
 
 
 
