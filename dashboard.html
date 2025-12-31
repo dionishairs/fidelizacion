@@ -115,16 +115,15 @@
 <script>
   const API_URL = "https://dionis-n8n.2vscvg.easypanel.host/webhook/dashboard";
 
-  // Obtener los datos del dashboard
   fetch(API_URL)
     .then(res => res.json())
     .then(data => {
-      // Verificar si el formato de respuesta es correcto
-      if (!data || !data[0] || !data[0].kpis) {
+      // ✅ El webhook devuelve un array con 1 item
+      const payload = Array.isArray(data) ? data[0] : data;
+
+      if (!payload || !payload.kpis) {
         throw new Error("Formato de dashboard inválido");
       }
-
-      const payload = data[0];  // Asumiendo que es un array con un solo objeto
 
       /* =====================
          KPIs
@@ -207,7 +206,6 @@
           alert("Hubo un problema al marcar la recompensa.");
         });
       }
-
     })
     .catch(err => {
       console.error("Error al cargar el dashboard:", err);
