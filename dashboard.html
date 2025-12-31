@@ -104,34 +104,19 @@
 <h1>📊 Dashboard</h1>
 <p class="subtitle">Dionis Hairs · Fidelización</p>
 
-<!-- ===== KPIs ===== -->
-<div class="grid">
-  <div class="card">
-    <div class="label">Clientes hoy</div>
-    <div class="kpi" id="kpi-clientes">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Visitas hoy</div>
-    <div class="kpi" id="kpi-visitas">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Top 1 actual</div>
-    <div class="kpi" id="kpi-top1">—</div>
-  </div>
-
-  <div class="card">
-    <div class="label">Premios pendientes</div>
-    <div class="kpi" id="kpi-premios">—</div>
-  </div>
-</div>
-
 <!-- ===== RECOMPENSAS ===== -->
 <div class="card" style="margin-top:20px">
   <h3>🎁 Recompensas pendientes</h3>
   <div class="list" id="recompensasList">
     <!-- Las recompensas se cargarán aquí -->
+  </div>
+</div>
+
+<!-- ===== RANKING ===== -->
+<div class="card" style="margin-top:20px">
+  <h3>🏆 Ranking actual</h3>
+  <div class="list" id="rankingList">
+    <!-- Aquí se cargarán los elementos del ranking -->
   </div>
 </div>
 
@@ -155,7 +140,6 @@
         const kpis = payload.kpis;
         const kpiEls = document.querySelectorAll(".kpi");
 
-        // Comprobamos que los elementos de KPIs existan antes de actualizarlos
         if (kpiEls.length === 4) {
           kpiEls[0].textContent = kpis.clientes_hoy;
           kpiEls[1].textContent = kpis.visitas_hoy;
