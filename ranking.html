@@ -265,29 +265,15 @@ function pintarRanking(ranking) {
     return;
   }
 
-  /* ===================== PROGRESO ===================== */
-  const CORTES_PUNTOS = 6;
-  const AMIGO_PUNTOS = 15;
+const rival = ranking.find(r => r.posicion === yo.posicion - 1);
 
-  const rival = ranking.find(r => r.posicion === yo.posicion - 1);
+if (rival) {
+  const faltan = rival.puntos - yo.puntos + 6;
 
-  if (!rival) return;
-
-  const puntosNecesarios = rival.puntos - yo.puntos + 1;
-  const cortesNecesarios = Math.ceil(puntosNecesarios / CORTES_PUNTOS);
-  const conAmigoAdelanta = yo.puntos + AMIGO_PUNTOS > rival.puntos;
-
-  if (conAmigoAdelanta) {
-    motivation.innerHTML = `
-      🚀 Si traes <strong>1 amigo</strong> (+15 pts),
-      adelantas a <strong>${rival.nombre}</strong> directamente
-    `;
-  } else {
-    motivation.innerHTML = `
-      🔥 Te faltan <strong>${cortesNecesarios}</strong> corte${cortesNecesarios > 1 ? "s" : ""}
-      para adelantar a <strong>${rival.nombre}</strong>
-    `;
-  }
+  motivation.innerHTML = `
+    🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""}
+    para adelantar a <strong>${rival.nombre}</strong>
+  `;
 }
 
 /* ===================== NAV ===================== */
