@@ -265,22 +265,24 @@ function pintarRanking(ranking) {
     return;
   }
 
-const rival = ranking.find(r => r.posicion === yo.posicion - 1);
+  const rival = ranking.find(r => r.posicion === yo.posicion - 1);
 
-if (rival) {
-  const faltan = rival.puntos - yo.puntos + 6;
+  if (rival) {
+    const faltan = rival.puntos - yo.puntos + 6;
 
-  motivation.innerHTML = `
-    🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""}
-    para adelantar a <strong>${rival.nombre}</strong>
-  `;
-}
+    motivation.innerHTML = `
+      🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""}
+      para adelantar a <strong>${rival.nombre}</strong>
+    `;
+  }
+} // ⬅️ ESTA LLAVE FALTABA
 
 /* ===================== NAV ===================== */
 function volver() {
   window.history.back();
 }
 </script>
+
 
 
 </body>
