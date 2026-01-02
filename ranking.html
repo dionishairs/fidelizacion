@@ -214,7 +214,7 @@ fetch(API)
   });
 
 function premioPorPosicion(pos) {
-  if (pos === 1) return "🎉 50% de descuento";
+  if (pos === 1) return "🎉 Corte Gratis";
   if (pos === 2) return "💈 Lavado premium";
   if (pos === 3) return "🥤 Bebida gratis";
   return "";
@@ -263,7 +263,7 @@ function pintarRanking(ranking) {
 
   const rival = ranking.find(r => r.posicion === yo.posicion - 1);
   if (rival) {
-    const faltan = rival.puntos - yo.puntos + 1;
+    const faltan = rival.puntos - yo.puntos + 6;
     motivation.innerHTML =
       `🔥 Te faltan <strong>${faltan}</strong> visita${faltan > 1 ? "s" : ""} para adelantar a <strong>${rival.nombre}</strong>`;
   }
