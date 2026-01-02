@@ -168,7 +168,6 @@
 
   <button class="back-btn" onclick="volver()">⬅ Volver a mi tarjeta</button>
 </main>
-
 <script>
 const id = new URLSearchParams(window.location.search).get("id");
 
@@ -213,6 +212,7 @@ fetch(API)
       "❌ Error cargando la clasificación";
   });
 
+/* ===================== PREMIOS ===================== */
 function premioPorPosicion(pos) {
   if (pos === 1) return "🎉 Corte Gratis";
   if (pos === 2) return "💈 Lavado premium";
@@ -220,6 +220,7 @@ function premioPorPosicion(pos) {
   return "";
 }
 
+/* ===================== RENDER ===================== */
 function pintarRanking(ranking) {
   const top3 = document.querySelector(".top3");
   const list = document.querySelector(".list");
@@ -239,14 +240,16 @@ function pintarRanking(ranking) {
           <div>${c.esYo ? "Tú" : c.nombre}</div>
           <div class="points">${c.puntos} pts</div>
           <div class="reward">${premioPorPosicion(c.posicion)}</div>
-        </div>`;
+        </div>
+      `;
     }
 
     list.innerHTML += `
       <div class="row ${c.esYo ? "me" : ""}">
         <strong>${c.posicion}. ${c.esYo ? "Tú" : c.nombre}</strong>
         <span>${c.puntos} pts</span>
-      </div>`;
+      </div>
+    `;
   });
 
   const yo = ranking.find(r => r.esYo);
@@ -257,16 +260,19 @@ function pintarRanking(ranking) {
   }
 
   if (yo.posicion === 1) {
-    motivation.innerHTML = "🏆 Eres el cliente más fiel este mes. ¡Defiende el puesto!";
+    motivation.innerHTML =
+      "🏆 Eres el cliente más fiel este mes. ¡Defiende el puesto!";
     return;
   }
 
- const CORTES_PUNTOS = 6;
-const AMIGO_PUNTOS = 15;
+  /* ===================== PROGRESO ===================== */
+  const CORTES_PUNTOS = 6;
+  const AMIGO_PUNTOS = 15;
 
-const rival = ranking.find(r => r.posicion === yo.posicion - 1);
+  const rival = ranking.find(r => r.posicion === yo.posicion - 1);
 
-if (rival) {
+  if (!rival) return;
+
   const puntosNecesarios = rival.puntos - yo.puntos + 1;
   const cortesNecesarios = Math.ceil(puntosNecesarios / CORTES_PUNTOS);
   const conAmigoAdelanta = yo.puntos + AMIGO_PUNTOS > rival.puntos;
@@ -284,11 +290,12 @@ if (rival) {
   }
 }
 
-
+/* ===================== NAV ===================== */
 function volver() {
   window.history.back();
 }
 </script>
+
 
 </body>
 </html>
