@@ -272,10 +272,20 @@
   }
 
   // ===============================
-  // 📌 OBTENER ID DE CLIENTE
+  // 📌 GESTIÓN DEL ID DE CLIENTE (CLAVE)
   // ===============================
-  const id = new URLSearchParams(window.location.search).get("id");
+  const params = new URLSearchParams(window.location.search);
+  let id = params.get("id");
 
+  // Si viene por URL → guardarlo
+  if (id) {
+    localStorage.setItem("cliente_id", id);
+  } else {
+    // Si NO viene → intentar recuperarlo
+    id = localStorage.getItem("cliente_id");
+  }
+
+  // Si después de todo NO hay ID → error real
   if (!id) {
     document.body.innerHTML =
       "<h2 style='color:white;text-align:center'>Cliente no identificado</h2>";
@@ -363,9 +373,6 @@
 
       pintarMiRecompensa(cliente.posicion);
 
-      // ===============================
-      // 📱 QR
-      // ===============================
       const qrData =
         `https://dionishairs.github.io/fidelizacion/registrar.html?id=${id}`;
 
@@ -377,5 +384,6 @@
       mostrarToast("Error al cargar los datos", "error");
     });
 </script>
+
 </body>
 </html>
