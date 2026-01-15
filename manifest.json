@@ -2,6 +2,7 @@
   "name": "Dionis Hairs Fidelización",
   "short_name": "Dionis Hairs",
   "start_url": "/fidelizacion/index.html",
+  "scope": "/fidelizacion/",
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#d4af37",
